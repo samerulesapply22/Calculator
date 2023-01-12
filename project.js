@@ -10,7 +10,7 @@ const operations = document.querySelectorAll(".operation");
 operations.forEach(operations => operations.addEventListener("click", () => display.textContent += operations.textContent));
 
 const equals = document.querySelector("#equals");
-equals.addEventListener("click", () => display.textContent += " = " + Math.round(operate(display.textContent) * 1000) / 1000);
+equals.addEventListener("click", () => display.textContent += " = " + Math.round(calculator(display.textContent) * 1000) / 1000);
 
 function add(a, b) {
     return a + b;
@@ -29,19 +29,23 @@ function divide(a, b) {
     return a / b;
 };
 
-function findOperators(text) {
+function calculator(text) {
+    const array = text.split(" ");
     const math = ["+", "-", "*", "/"];
-    const operators = [];
-    for (x of math) if (text.includes(x)) operators.push(x);
-    return operators;
-};
+    let n = 0;
+    const operators = array.filter(operator => math.includes(operator));
+    while (math.some(operator => array.includes(operator))) {
+        const index = array.indexOf(operators[n]);
+        array.splice(index, 1);
+        array[n + 1] = operate(operators[n], array[n], array[n + 1]);
+        n++;
+    }
+    return array[n];
+}
 
-function operate(text) {
-    operators = findOperators(text);
-    operator = operators[0];
-    array = text.split(operator);
-    a = Number(array[0]);
-    b = Number(array[1]);
+function operate(operator, a, b) {
+    a = Number(a);
+    b = Number(b);
     switch(operator) {
         case "+":
             return add(a, b);
@@ -52,6 +56,5 @@ function operate(text) {
         case "/":
             return divide(a, b);
     };
-};
-
+}
 
